@@ -10,9 +10,6 @@ python-multipart
 ## Generative Model - Google Gemini
 google-genai
 
-## Generative Model - Ollama Models 
-ollama
-
 ## SQLAlchemy Lib
 sqlalchemy
 

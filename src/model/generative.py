@@ -1,10 +1,15 @@
-import ollama
-from ollama import GenerateResponse
+from google import genai
+from google.genai.types import GenerateContentResponse
 
-def generate(prompt: str) -> GenerateResponse:
-    response = ollama.generate(
-        model="llama3.2",
-        prompt=prompt
+from src.settings import Settings
+
+def generate(prompt: str) -> GenerateContentResponse:
+    settings = Settings()
+
+    client = genai.Client(api_key=settings.generative_models.genai_api_key)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
     )
 
     return response

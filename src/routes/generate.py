@@ -52,8 +52,7 @@ def generate_sql(
         prompt_sql = get_sql_prompt(query=data.query, database_struct=database_struct)
 
         response_model = generate(prompt=prompt_sql)
-        print(response_model)
-        genarated_sql = response_model.response.replace('```sql', '').replace('```', '').strip()
+        genarated_sql = response_model.text.replace('```sql', '').replace('```', '').strip()
 
         if data.only_sql:
             return GenerateSQLResponse(sql=genarated_sql)
