@@ -1,0 +1,7 @@
+.venv/
+examples/
+resources/
+__pycache__/
+tests/
+*.pyc
+.env

@@ -1,0 +1,32 @@
+## REST API Libs
+fastapi
+uvicorn
+
+## REST API Libs - Tools
+pydantic
+pydantic-settings
+python-multipart
+
+## Generative Model - Google Gemini
+google-genai
+
+## Generative Model - Ollama Models 
+ollama
+
+## SQLAlchemy Lib
+sqlalchemy
+
+## Postgres DataBase
+psycopg2-binary # Driver
+
+## MySQL DataBase
+# PyMySQL # Driver
+# cryptography # Resources 
+
+## TESTS LIBS ##
+
+## Environment
+python-dotenv
+
+## Request HTTP
+requests

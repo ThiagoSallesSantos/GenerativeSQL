@@ -1,0 +1,18 @@
+services:
+
+  database: 
+    container_name: DatabaseGenerativeSQL
+    image: postgres:latest
+    env_file:
+      - ".env"
+    environment:
+      - POSTGRES_DB=${DATABASE__DB_DATABASE}
+      - POSTGRES_USER=${DATABASE__DB_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE__DB_PASSWORD}
+    volumes:
+      - VolumeDatabaseGenerativeSQL:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE__DB_PORT}:5432"
+
+volumes:
+  VolumeDatabaseGenerativeSQL:
