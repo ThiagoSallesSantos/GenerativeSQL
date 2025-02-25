@@ -8,7 +8,8 @@ def generate_sql(prompt: str) -> GeneratedSQL:
         prompt=prompt,
         format=GeneratedSQL.model_json_schema(),
         options=ollama.Options(
-            temperature=0.0
+            temperature=0.0,
+            num_ctx=4096
         ),
         keep_alive=0
     )
