@@ -18,7 +18,11 @@ class CreateConfigDatabaseConnection(BaseModel):
     port: int
     database: str
 
+class GenerateSQLDatabaseConnection(BaseModel):
+    query: str
+    database_struct: Optional[str] = Field(default=None)
+    only_sql: bool = Field(default=True)
+
 class GenerateSQL(BaseModel):
     query: str
-    database_connection_config_id: int
-    only_sql: bool = Field(default=False)
+    database_struct: str

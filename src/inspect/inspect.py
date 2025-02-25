@@ -1,6 +1,8 @@
 from sqlalchemy import inspect, Engine
 
-def get_database_struct(engine: Engine):
+from typing import Dict, Any
+
+def get_database_struct(engine: Engine) -> Dict[str, Any]:
     database_info = inspect(engine)
     fix_schema = engine.dialect.default_schema_name
 

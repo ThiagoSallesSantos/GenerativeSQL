@@ -11,7 +11,7 @@ from src.inspect.inspect import get_database_struct
 from src.model.prompt import get_sql_prompt
 from src.model.generative import generate
 
-from src.schemas.input import GenerateSQL
+from src.schemas.input import GenerateSQLDatabaseConnection, GenerateSQL
 from src.schemas.output import GenerateSQLResponse
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
@@ -19,17 +19,40 @@ router = APIRouter(prefix="/generate", tags=["Generate"])
 @router.post("/sql/", response_model=GenerateSQLResponse,
     summary="Create a generative SQL",
     description="""
-        Receive the query data to generate a SQL.
+        Receive the query and database connection data to generate a SQL.
     """,
 )
 def generate_sql(
     data: GenerateSQL,
+):
+    try:
+        prompt_sql = get_sql_prompt(query=data.query, database_struct=data.database_struct)
+
+        response_model = generate(prompt=prompt_sql)
+        genarated_sql = response_model.text.replace('```sql', '').replace('```', '').strip()
+
+        return GenerateSQLResponse(sql=genarated_sql)
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@router.post("/sql/{database_connection_config_id}/", response_model=GenerateSQLResponse,
+    summary="Create a generative SQL",
+    description="""
+        Receive the query and database connection data to generate a SQL.
+    """,
+)
+def generate_sql_with_database_connection(
+    database_connection_config_id: int,
+    data: GenerateSQLDatabaseConnection,
     session: EndpointSession
 ):
     try:
         database_connection_config: DatabaseConnectionConfig = get_db(
             model=DatabaseConnectionConfig,
-            database_connection_config_id=data.database_connection_config_id,
+            database_connection_config_id=database_connection_config_id,
             get_all=False,
             session=session,
         )
@@ -47,7 +70,9 @@ def generate_sql(
         )
         engine = connection_database.get_engine()
 
-        database_struct = get_database_struct(engine=engine)
+        database_struct = data.database_struct
+        if database_struct is None:
+            database_struct = get_database_struct(engine=engine)
 
         prompt_sql = get_sql_prompt(query=data.query, database_struct=database_struct)
 
