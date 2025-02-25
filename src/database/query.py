@@ -7,7 +7,7 @@ from sqlalchemy import text, Result
 
 from src.database.models import Base
 
-from typing import List, Union, Dict, Any
+from typing import List, Union
 
 @singledispatch
 def add_db(data: Base, *, session: Session) -> None:

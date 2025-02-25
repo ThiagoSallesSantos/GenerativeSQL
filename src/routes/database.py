@@ -10,8 +10,8 @@ from src.database.connect import ConnectDatabase
 
 from src.inspect.inspect import get_database_struct
 
-from src.schemas.input import CreateConfigDatabaseConnection
-from src.schemas.output import DatabaseConnectionConfigResponse
+from src.routes.schemas.input import CreateConfigDatabaseConnection
+from src.routes.schemas.output import DatabaseConnectionConfigResponse
 
 router = APIRouter(prefix="/database", tags=["Database"])
 

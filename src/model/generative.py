@@ -1,15 +1,18 @@
-from google import genai
-from google.genai.types import GenerateContentResponse
+import ollama
 
-from src.settings import Settings
+from src.model.utils import GeneratedSQL
 
-def generate(prompt: str) -> GenerateContentResponse:
-    settings = Settings()
-
-    client = genai.Client(api_key=settings.generative_models.genai_api_key)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt,
+def generate_sql(prompt: str) -> GeneratedSQL:
+    response = ollama.generate(
+        model="llama3.2",
+        prompt=prompt,
+        format=GeneratedSQL.model_json_schema(),
+        options=ollama.Options(
+            temperature=0.0
+        ),
+        keep_alive=0
     )
 
-    return response
+    generated_sql = GeneratedSQL.model_validate_json(response.response)
+
+    return generated_sql

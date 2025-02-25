@@ -16,9 +16,6 @@ class DatabaseSettings(BaseModel):
     db_port: int
     db_database: str
 
-class GenerativeModelsSettings(BaseModel):
-    genai_api_key: str
-
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -28,4 +25,3 @@ class Settings(BaseSettings):
     version: str
     application: APPSettings
     database: DatabaseSettings
-    generative_models: GenerativeModelsSettings

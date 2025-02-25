@@ -9,10 +9,10 @@ from src.database.query import get_db, query_db
 from src.inspect.inspect import get_database_struct
 
 from src.model.prompt import get_sql_prompt
-from src.model.generative import generate
+from src.model.generative import generate_sql
 
-from src.schemas.input import GenerateSQLDatabaseConnection, GenerateSQL
-from src.schemas.output import GenerateSQLResponse
+from src.routes.schemas.input import GenerateSQLDatabaseConnection, GenerateSQL
+from src.routes.schemas.output import GenerateSQLResponse
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
@@ -22,16 +22,15 @@ router = APIRouter(prefix="/generate", tags=["Generate"])
         Receive the query and database connection data to generate a SQL.
     """,
 )
-def generate_sql(
+def create_generate_sql(
     data: GenerateSQL,
 ):
     try:
         prompt_sql = get_sql_prompt(query=data.query, database_struct=data.database_struct)
 
-        response_model = generate(prompt=prompt_sql)
-        genarated_sql = response_model.text.replace('```sql', '').replace('```', '').strip()
+        genarated_sql = generate_sql(prompt=prompt_sql)
 
-        return GenerateSQLResponse(sql=genarated_sql)
+        return GenerateSQLResponse(sql=genarated_sql.sql)
 
     except HTTPException as e:
         raise e
@@ -44,7 +43,7 @@ def generate_sql(
         Receive the query and database connection data to generate a SQL.
     """,
 )
-def generate_sql_with_database_connection(
+def create_generate_sql_with_database_connection(
     database_connection_config_id: int,
     data: GenerateSQLDatabaseConnection,
     session: EndpointSession
@@ -76,16 +75,15 @@ def generate_sql_with_database_connection(
 
         prompt_sql = get_sql_prompt(query=data.query, database_struct=database_struct)
 
-        response_model = generate(prompt=prompt_sql)
-        genarated_sql = response_model.text.replace('```sql', '').replace('```', '').strip()
+        genarated_sql = generate_sql(prompt=prompt_sql)
 
         if data.only_sql:
-            return GenerateSQLResponse(sql=genarated_sql)
+            return GenerateSQLResponse(sql=genarated_sql.sql)
 
-        result_db = query_db(query=genarated_sql, session=get_session(engine=engine))
+        result_db = query_db(query=genarated_sql.sql, session=get_session(engine=engine))
         result = convert_row_to_list(rows=result_db.all())
         
-        return GenerateSQLResponse(result=result, sql=genarated_sql)
+        return GenerateSQLResponse(result=result, sql=genarated_sql.sql)
 
     except HTTPException as e:
         raise e

@@ -7,8 +7,8 @@ pydantic
 pydantic-settings
 python-multipart
 
-## Generative Model - Google Gemini
-google-genai
+## Generative Model
+ollama ## Ollama - Local
 
 ## SQLAlchemy Lib
 sqlalchemy
@@ -16,7 +16,7 @@ sqlalchemy
 ## Postgres DataBase
 psycopg2-binary # Driver
 
-## MySQL DataBase
+## MySQL DataBase - TODO
 # PyMySQL # Driver
 # cryptography # Resources 
 
