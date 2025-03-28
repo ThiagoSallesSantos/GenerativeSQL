@@ -6,13 +6,13 @@ from src.database.connect import ConnectDatabase
 from src.database.models import DatabaseConnectionConfig
 from src.database.query import get_db, query_db
 
-from src.inspect.inspect import get_database_struct
+from src.model.inspect_database import get_database_struct
 
 from src.model.prompt import get_sql_prompt
 from src.model.generative import generate_sql
 
-from src.routes.schemas.input import GenerateSQLDatabaseConnection, GenerateSQL
-from src.routes.schemas.output import GenerateSQLResponse
+from src.schemas.schemas import (GenerateSQLResponse, RequestGenerateSQLSchema, 
+                                RequestGenerateSQLWithDatabaseConnectionSchema)
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
@@ -22,15 +22,15 @@ router = APIRouter(prefix="/generate", tags=["Generate"])
         Receive the query and database connection data to generate a SQL.
     """,
 )
-def create_generate_sql(
-    data: GenerateSQL,
+def create_generated_sql(
+    data: RequestGenerateSQLSchema,
 ):
     try:
         prompt_sql = get_sql_prompt(query=data.query, database_struct=data.database_struct)
 
         genarated_sql = generate_sql(prompt=prompt_sql)
 
-        return GenerateSQLResponse(sql=genarated_sql.sql)
+        return GenerateSQLResponse(sql=genarated_sql)
 
     except HTTPException as e:
         raise e
@@ -43,17 +43,17 @@ def create_generate_sql(
         Receive the query and database connection data to generate a SQL.
     """,
 )
-def create_generate_sql_with_database_connection(
+def create_generated_sql_with_database_connection(
     database_connection_config_id: int,
-    data: GenerateSQLDatabaseConnection,
-    session: EndpointSession
+    data: RequestGenerateSQLWithDatabaseConnectionSchema,
+    session_db: EndpointSession
 ):
     try:
         database_connection_config: DatabaseConnectionConfig = get_db(
-            model=DatabaseConnectionConfig,
+            table=DatabaseConnectionConfig,
             database_connection_config_id=database_connection_config_id,
             get_all=False,
-            session=session,
+            session=session_db,
         )
 
         if database_connection_config is None:
@@ -67,11 +67,11 @@ def create_generate_sql_with_database_connection(
             port=database_connection_config.database_connection_config_port,
             database=database_connection_config.database_connection_config_database
         )
-        engine = connection_database.get_engine()
+        user_database_engine = connection_database.get_engine()
 
         database_struct = data.database_struct
         if database_struct is None:
-            database_struct = get_database_struct(engine=engine)
+            database_struct = get_database_struct(engine=user_database_engine)
 
         prompt_sql = get_sql_prompt(query=data.query, database_struct=database_struct)
 
@@ -80,10 +80,11 @@ def create_generate_sql_with_database_connection(
         if data.only_sql:
             return GenerateSQLResponse(sql=genarated_sql.sql)
 
-        result_db = query_db(query=genarated_sql.sql, session=get_session(engine=engine))
+        session_user_database_connection = get_session(engine=user_database_engine)
+        result_db = query_db(query=genarated_sql.sql, session=session_user_database_connection)
         result = convert_row_to_list(rows=result_db.all())
         
-        return GenerateSQLResponse(result=result, sql=genarated_sql.sql)
+        return GenerateSQLResponse(result=result, sql=genarated_sql)
 
     except HTTPException as e:
         raise e

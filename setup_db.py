@@ -1,4 +1,4 @@
-from src.settings import Settings
+from src.config.settings import Settings
 from src.database.connect import ConnectDatabase
 
 from src.database.models import Base

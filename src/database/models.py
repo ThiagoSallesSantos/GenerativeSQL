@@ -13,7 +13,7 @@ class DatabaseConnectionConfig(Base):
     __tablename__ = "database_connection_config"
 
     database_connection_config_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True,)
-    database_connection_config_dbms: Mapped[int] = mapped_column(String(length=50))
+    database_connection_config_dbms: Mapped[str] = mapped_column(String(length=50))
     database_connection_config_username: Mapped[str] = mapped_column(String(length=50))
     database_connection_config_password: Mapped[str] = mapped_column(String)
     database_connection_config_host: Mapped[str] = mapped_column(String(length=50))

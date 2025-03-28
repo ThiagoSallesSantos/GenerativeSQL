@@ -1,7 +1,7 @@
 ## Description: This file is the entry point of the application. It is responsible for running the FastAPI application.
 
 import uvicorn
-from src.settings import Settings
+from src.config.settings import Settings
 
 if __name__ == "__main__":
     settings = Settings()

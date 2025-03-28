@@ -1,11 +1,11 @@
 ## REST API Libs
 fastapi
 uvicorn
+python-multipart
 
-## REST API Libs - Tools
+## Data validation
 pydantic
 pydantic-settings
-python-multipart
 
 ## Generative Model
 ollama ## Ollama - Local

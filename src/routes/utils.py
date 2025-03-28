@@ -6,7 +6,7 @@ from sqlalchemy import Engine, Row
 from sqlalchemy.orm import Session
 from src.database.connect import ConnectDatabase
 
-from src.settings import Settings
+from src.config.settings import Settings
 
 from typing import Annotated, List, Sequence, Dict, Any
 
