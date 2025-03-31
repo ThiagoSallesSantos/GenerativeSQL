@@ -11,33 +11,33 @@ from src.model.inspect_database import get_database_struct
 from src.model.prompt import get_sql_prompt
 from src.model.generative import generate_sql
 
-from src.schemas.schemas import (GenerateSQLResponse, RequestGenerateSQLSchema, 
-                                RequestGenerateSQLWithDatabaseConnectionSchema)
+from src.routes.schemas.input import GenerateSQLDatabaseConnectionSchema, GenerateSQLSchema
+from src.routes.schemas.output import GeneratedSQLResultSchema
 
 router = APIRouter(prefix="/generate", tags=["Generate"])
 
-@router.post("/sql/", response_model=GenerateSQLResponse,
+@router.post("/sql/", response_model=GeneratedSQLResultSchema,
     summary="Create a generative SQL",
     description="""
         Receive the query and database connection data to generate a SQL.
     """,
 )
 def create_generated_sql(
-    data: RequestGenerateSQLSchema,
+    data: GenerateSQLSchema,
 ):
     try:
         prompt_sql = get_sql_prompt(query=data.query, database_struct=data.database_struct)
 
         genarated_sql = generate_sql(prompt=prompt_sql)
 
-        return GenerateSQLResponse(sql=genarated_sql)
+        return GeneratedSQLResultSchema(sql=genarated_sql)
 
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@router.post("/sql/{database_connection_config_id}/", response_model=GenerateSQLResponse,
+@router.post("/sql/{database_connection_config_id}/", response_model=GeneratedSQLResultSchema,
     summary="Create a generative SQL",
     description="""
         Receive the query and database connection data to generate a SQL.
@@ -45,7 +45,7 @@ def create_generated_sql(
 )
 def create_generated_sql_with_database_connection(
     database_connection_config_id: int,
-    data: RequestGenerateSQLWithDatabaseConnectionSchema,
+    data: GenerateSQLDatabaseConnectionSchema,
     session_db: EndpointSession
 ):
     try:
@@ -78,13 +78,13 @@ def create_generated_sql_with_database_connection(
         genarated_sql = generate_sql(prompt=prompt_sql)
 
         if data.only_sql:
-            return GenerateSQLResponse(sql=genarated_sql.sql)
+            return GeneratedSQLResultSchema(sql=genarated_sql.sql)
 
         session_user_database_connection = get_session(engine=user_database_engine)
         result_db = query_db(query=genarated_sql.sql, session=session_user_database_connection)
         result = convert_row_to_list(rows=result_db.all())
         
-        return GenerateSQLResponse(result=result, sql=genarated_sql)
+        return GeneratedSQLResultSchema(result=result, sql=genarated_sql)
 
     except HTTPException as e:
         raise e

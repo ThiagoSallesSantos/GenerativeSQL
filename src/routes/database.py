@@ -10,18 +10,19 @@ from src.database.connect import ConnectDatabase
 
 from src.model.inspect_database import get_database_struct
 
-from src.schemas.schemas import (CreateConfigDatabaseConnectionSchema, ConfigDatabaseConnectionSchema)
+from src.routes.schemas.input import ConfigDatabaseConnectionSchema 
+from src.routes.schemas.output import ConfiguredDatabaseConnectionSchema
 
 router = APIRouter(prefix="/database", tags=["Database"])
 
-@router.post("/", response_model=ConfigDatabaseConnectionSchema,
+@router.post("/", response_model=ConfiguredDatabaseConnectionSchema,
     summary="Create a connection to a database",
     description="""
         Receive the connection data to a database.
     """,
 )
 def create_connect_database(
-    database_connection_config: CreateConfigDatabaseConnectionSchema,
+    database_connection_config: ConfigDatabaseConnectionSchema,
     session_db: EndpointSession
 ):
     try:
@@ -35,12 +36,12 @@ def create_connect_database(
         )
         add_db(new_database_connection_config, session=session_db)
 
-        return ConfigDatabaseConnectionSchema.model_validate(new_database_connection_config) 
+        return ConfiguredDatabaseConnectionSchema.model_validate(new_database_connection_config) 
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{database_connection_config_id}/", response_model=ConfigDatabaseConnectionSchema,
+@router.get("/{database_connection_config_id}/", response_model=ConfiguredDatabaseConnectionSchema,
     summary="Get a connection to a database",
     description="""
         Recover a database connection config.
@@ -61,14 +62,14 @@ def get_connect_database(
         if database_connection_config is None:
             raise HTTPException(status_code=404, detail="Database connection not found")
 
-        return ConfigDatabaseConnectionSchema.model_validate(database_connection_config)
+        return ConfiguredDatabaseConnectionSchema.model_validate(database_connection_config)
 
     except HTTPException as e:
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/{database_connection_config_id}/", response_model=ConfigDatabaseConnectionSchema,
+@router.delete("/{database_connection_config_id}/", response_model=ConfiguredDatabaseConnectionSchema,
     summary="Delete a connection to a database",
     description="""
         Delete a database connection config.
@@ -90,12 +91,12 @@ def delete_connect_database(
             raise HTTPException(status_code=404, detail="Database connection not found")
 
         delete_db(
-            model=DatabaseConnectionConfig,
+            table=DatabaseConnectionConfig,
             database_connection_config_id=database_connection_config_id,
             session=session_db,
         )
 
-        return ConfigDatabaseConnectionSchema.model_validate(database_connection_config)
+        return ConfiguredDatabaseConnectionSchema.model_validate(database_connection_config)
 
     except HTTPException as e:
         raise e
