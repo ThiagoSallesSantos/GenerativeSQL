@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 
-from src.model.models.schemas.schemas import GeneratedSQLSchema
+from src.services.models.schemas.schemas import GeneratedSQLSchema
 
 from typing import List, Dict, Any
 
