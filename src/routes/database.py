@@ -8,7 +8,7 @@ from src.database.models import DatabaseConnectionConfig
 from src.database.query import add_db, get_db, delete_db
 from src.database.connect import ConnectDatabase
 
-from src.model.inspect_database import get_database_struct
+from src.services.inspect.inspect_database import get_database_struct
 
 from src.routes.schemas.input import ConfigDatabaseConnectionSchema 
 from src.routes.schemas.output import ConfiguredDatabaseConnectionSchema

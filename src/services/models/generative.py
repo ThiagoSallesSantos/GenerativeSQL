@@ -1,6 +1,6 @@
 import ollama
 
-from src.model.schemas.schemas import GeneratedSQLSchema
+from src.services.models.schemas.schemas import GeneratedSQLSchema
 
 def generate_sql(prompt: str) -> GeneratedSQLSchema:
     response = ollama.generate(

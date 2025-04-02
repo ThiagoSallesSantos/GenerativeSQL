@@ -6,10 +6,10 @@ from src.database.connect import ConnectDatabase
 from src.database.models import DatabaseConnectionConfig
 from src.database.query import get_db, query_db
 
-from src.model.inspect_database import get_database_struct
+from src.services.inspect.inspect_database import get_database_struct
 
-from src.model.prompt import get_sql_prompt
-from src.model.generative import generate_sql
+from src.services.prompt.prompt import get_sql_prompt
+from src.services.models.generative import generate_sql
 
 from src.routes.schemas.input import GenerateSQLDatabaseConnectionSchema, GenerateSQLSchema
 from src.routes.schemas.output import GeneratedSQLResultSchema
